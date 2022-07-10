@@ -97,8 +97,7 @@ boss_vale(6).
 inimigo_vale(3).
 
 %hp base
-vida_base(100).
-vida_bboss(300).
+vida_base(3).
 
 %deseja - reinos em que bowser não passa com intuito de pegar algo foram omitidos
 %deseja(reino, objetivo).
@@ -161,32 +160,19 @@ gerar_lista(REINO, LUAS, CASAS, LISTA, LINI, QINI) :-
     quant_casas(REINO, LUAS, CASAS),
 	
     tem_boss(REINO, B), %write(B),
-    
+
     %QINI = ((LUAS - (6 * enfrentar(REINO, X) )) / 3) + 1,
     quant_luas(REINO, LUAS), quant_inim(LUAS, B, QINI),
+    write('quant inim: '),writeln(QINI),
     
-    %lista inicial
-    criar_lista(CASAS, LISTA), 
-    %write('casas: '),writeln(LISTA),
+    criar_lista(CASAS, LISTA), %lista inicial
     posicionar_inimigos(LINI, QINI, CASAS).
-    %, write('inimigos: '), write(LINI).
-    
-    %determinar se tem chefe só ao percorrer ingame(?)
-	%posicionar_chefe(L, CASAS, LISTA, B).
 
 
 casa_vazia() :- 
     writeln('Tudo parece seguro, avançando para a próxima casa!').
+	%pensei em colocar um timer pra prosseguir, 1s talvez, para não ficar tudo muito rapido
 	
-
-encontro_inimigo(HP, HPINIM) :- 
-    writeln('Um inimigo se aproxima...'),
-	%while(hp>0 ou hpinim>0)
-    %o que deseja fazer...1)atacar 2)desviar
-    
-    fail.
-
-%trabalhar melhor na exibicao de tudo
 reparar_odyssey(REINO, LUAS) :-
     luas(REINO, OBJ),
     ((OBJ=<LUAS) ->
@@ -195,18 +181,16 @@ reparar_odyssey(REINO, LUAS) :-
     	fail
     ).
 
-
-
 batalha(HP, HPINI, LUAS) :-
-    ((HPINI==0) -> %SE GANHAR
-    	LUAS = 3
-	;(HP==0) ->  %SE MORRER
+    ((HPINI=:=0) -> %SE GANHAR
+    	LUAS = 3 %isso é meio que só uma flag aqui, onde ela é chamada já é diferenciado se é ou não boss
+	;(HP=:=0) ->  %SE MORRER
     	writeln('você morreu!'),
     	LUAS = 0;
     write('VIDA ATUAL: '), writeln(HP),
     write('VIDA INIMIGO: '), writeln(HPINI),
 	turno(HP, HPF, HPINI, HPINIF),
-	tty_clear,%testando o comando de limpar a tela
+	%limpar a tela aq
     batalha(HPF, HPINIF, LUAS)
     ).
 
@@ -215,33 +199,22 @@ turno(HP, NHP, HINI, HINIF) :-
     writeln('[1] ATACAR'), writeln('[2] DESVIAR'),
     read(INPUT),
     ((INPUT=:=1) ->
-    	atk_turno(HINI, 0, HINIF),
+    	writeln('SUA VEZ!'),
+    	atk_turno(HINI, HINIF),
         writeln('VEZ DO OPONENTE!'),
-        atk_turno(HP, 1, NHP);
+        atk_turno(HP, NHP);
     (INPUT=:=2) -> (
-		SORTE is random(20),
-		(SORTE>=10) -> writeln('VOCÊ DESVIOU, LEVANDO O INIMIGO A SE ACERTAR'), NHP is HP, HINIF is HINI-10;
-		writeln('NÃO CONSEGUIU DESVIAR, FICANDO EXPOSTO E LEVANDO MAIS DANO!'),
-		atk_turno(HP, 0, NHP)
+		SORTE is random(2),
+		(SORTE>0) -> writeln('VOCÊ DESVIOU, LEVANDO O INIMIGO A SE ACERTAR'), NHP is HP, HINIF is HINI-1;
+		writeln('NÃO CONSEGUIU DESVIAR, FICANDO EXPOSTO E LEVANDO DANO!'),
+		atk_turno(HP, NHP), HINIF is HINI
     );
     writeln('ENTRADA INVÁLIDA!'), NHP is HP, HINIF is HINI
     ).
-    	
 
-atk_turno(HPINI, MAQ, HPIF) :-
-	CRIT is random(100),
-	((CRIT>=90) -> 
-      (
-          C = 2,
-          writeln('Acerto crítico!')
-      );
-          C=1
-    ),
-    	
-	ATK is floor(((HPINI/3)*(C))/((1*MAQ)+1)),
-	HPIF is HPINI-ATK.
-
-
+atk_turno(HPINI, HPIF) :-
+	HPIF is HPINI-1.
+    
 
 %função de referência
 %dosomething([]).
@@ -250,34 +223,44 @@ percorre([], LINI, CASAS, B, HP, REINO).
 percorre([H|T], LINI, CASAS, B, HP, REINO) :- %tá percorrendo no mínimo 2x????
     luas(REINO, LUAS), writeln(LINI),
     ((nth0(_,LINI,H)), CASAS>1 -> %finalmente entendi o if, que emoção
-    	batalha(HP, 120, LUAS);
-    	%atualizar o hp e quantidade de estrelas
-    	%verificar se morreu
-    	casa_vazia()
+    	writeln('UM INIMIGO SURGE EM SEU CAMINHO!'),
+    	%morte deve ocorrer nas batalhas
+    	((batalha(HP, 3, 3)) ->
+        	write('LUAS: '),
+            X is H*3,
+            writeln(X);
+        	writeln('VOCÊ MORREU!!!')
+        ),
+    	casa_vazia()%SE NAO HOUVER INIMIGOS NA CASA ATUAL
     ),
-    %verificar se tem boss
-    ( (CASAS =:= H), B=:=1 -> 
-    	enfrentar(REINO, X),write('Você enfrenta '),writeln(X),
-    	batalha(HP, 240, LUAS);
+    %essas condições não aninhadas de forma errada
+    ((CASAS =:= H), B=:=1 -> %verificar se tem boss
+    	enfrentar(REINO, X),
+        write('Você enfrenta '), writeln(X),
+    	((batalha(HP, 3, 3)) ->
+        	write('LUAS: '),
+            writeln(LUAS);
+        	writeln('VOCÊ MORREU!!!')
+        );
     	!
     ),
+    
     %else vai ser um prossegue ae men
     percorre(T,LINI, CASAS, B, HP, REINO).
-	%vai percorrer um vetor de 1 a n
 
 %carregar a fase
 carregar_fase(REINO, _LUAS, _CASAS, _LISTA, _LINI, _QINI) :-
     %A LISTA DE 
-    gerar_lista(REINO, LUAS, CASAS, LISTA, LINI, QINI),writeln(LINI),
-    tem_boss(REINO, B),writeln(LISTA),
-    HP is 100,
-    percorre(LISTA, LINI, CASAS, B, HP, REINO),
-	%percorrer a lista, quando encontrar casa que coincida com inimigo,
-	%chamar encontro_inimigo, casa_vazia
-	%chamar tem_boss e boss se tiver
-	%se passar do boss com vida, chamar reparar_odyssey
-	reparar_odyssey(REINO, LUAS).
-	%reparo sucedido ou mal sucedido manda mensagem de sucesso ou fracasso
+    tem_boss(REINO, B),
+    gerar_lista(REINO, LUAS, CASAS, LISTA, LINI, QINI),
+    writeln(LINI), writeln(LISTA),
+    
+    HP is 6,
+    (percorre(LISTA, LINI, CASAS, B, HP, REINO)) ->  
+    	write('luas apos sair: '),writeln(LB),
+    	reparar_odyssey(REINO, LUAS);%se passar do boss com vida, chamar reparar_odyssey
+	writeln('você morreu MAN!').
+    
 
 escolher_fase() :-
     %gerar a lista de fases para escolher
