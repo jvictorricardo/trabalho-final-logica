@@ -134,16 +134,16 @@ tem_boss(REINO, B) :-
     	B is 0.
 
 quant_inim(LUAS, BOSS, QINI) :-
-    (BOSS =:= 1, LUAS >= 3) ->
+    (BOSS =:= 1, LUAS >= 3) ->%tem boss e deve ter inimigo
     	(
         	LR is LUAS - 3,
             X is LR/2,
             QINI is ceil(X)
         );
-    (BOSS =:= 1, LUAS < 4)->(
+    (BOSS =:= 1, LUAS < 4)->(%deve ter apenas o boss
 		QINI is 0
 	);
-    (BOSS =:= 0)->
+    (BOSS =:= 0)->%não tem boss
       (
       	X is LUAS/2,
       	QINI is ceil(X)
@@ -172,42 +172,43 @@ gerar_lista(REINO, LUAS, CASAS, LISTA, LINI, QINI) :-
 casa_vazia() :- 
     writeln('Tudo parece seguro, avançando para a próxima casa!').
 	%pensei em colocar um timer pra prosseguir, 1s talvez, para não ficar tudo muito rapido
-	
-reparar_odyssey(REINO, LUAS) :-
-    luas(REINO, OBJ),
-    ((OBJ=<LUAS) ->
-    	writeln("Você reparou a odyssey com sucesso!");
-    	writeln("Infelizmente você está preso nesse reino!");
-    	fail
-    ).
 
 batalha(HP, HPINI, LUAS) :-
-    ((HPINI=:=0) -> %SE GANHAR
-    	LUAS = 3 %isso é meio que só uma flag aqui, onde ela é chamada já é diferenciado se é ou não boss
-	;(HP=:=0) ->  %SE MORRER
-    	writeln('você morreu!'),
-    	LUAS = 0;
+    ((HPINI=:=0) -> %SE GANHAR, "retorna" true
+    	LUAS = 3;
+    (HP=:=0) ->  %SE MORRER, "retorna" false
+    	fail;
     write('VIDA ATUAL: '), writeln(HP),
     write('VIDA INIMIGO: '), writeln(HPINI),
 	turno(HP, HPF, HPINI, HPINIF),
 	%limpar a tela aq
-    batalha(HPF, HPINIF, LUAS)
-    ).
+    batalha(HPF, HPINIF, LUAS)).
 
-turno(HP, NHP, HINI, HINIF) :-
+turno(HP, NHP, HINI, HINIF) :- 
+    %como so ha 1 possibilidade de ambos se atacarem, 
+    %e ainda sim, a ordem de ataque é a mesma, adicionei
+    %um if para ignorar a vez da maquina se tiver sido eliminada
     writeln('O que deseja fazer?'),
     writeln('[1] ATACAR'), writeln('[2] DESVIAR'),
     read(INPUT),
     ((INPUT=:=1) ->
     	writeln('SUA VEZ!'),
-    	atk_turno(HINI, HINIF),
-        writeln('VEZ DO OPONENTE!'),
-        atk_turno(HP, NHP);
+		atk_turno(HINI, HINIF),
+    	((HINIF>0) -> 
+        	writeln('VEZ DO OPONENTE!'), 
+        	atk_turno(HP, NHP); 
+        !
+        );
     (INPUT=:=2) -> (
+	%nesse caso aqui, como um só vai atacar, acho que 
+	%não precisa da condicional de encerramento
 		SORTE is random(2),
-		(SORTE>0) -> writeln('VOCÊ DESVIOU, LEVANDO O INIMIGO A SE ACERTAR'), NHP is HP, HINIF is HINI-1;
+		(SORTE>0) -> 
+                   writeln('VOCÊ DESVIOU, LEVANDO O INIMIGO A SE ACERTAR'), 
+                   NHP is HP, HINIF is HINI-1;
 		writeln('NÃO CONSEGUIU DESVIAR, FICANDO EXPOSTO E LEVANDO DANO!'),
-		atk_turno(HP, NHP), HINIF is HINI
+		atk_turno(HP, NHP),
+		HINIF is HINI
     );
     writeln('ENTRADA INVÁLIDA!'), NHP is HP, HINIF is HINI
     ).
@@ -221,53 +222,52 @@ atk_turno(HPINI, HPIF) :-
 %dosomething([H|T]) :- process(H), dosomething(T).
 percorre([], LINI, CASAS, B, HP, REINO).
 percorre([H|T], LINI, CASAS, B, HP, REINO) :- %tá percorrendo no mínimo 2x????
-    luas(REINO, LUAS), writeln(LINI),
-    ((nth0(_,LINI,H)), CASAS>1 -> %finalmente entendi o if, que emoção
-    	writeln('UM INIMIGO SURGE EM SEU CAMINHO!'),
-    	%morte deve ocorrer nas batalhas
+    luas(REINO, LUAS),
+    write(H),
+    ((nth0(_,LINI,H), CASAS>1) -> %tem inimigo
+    	writeln('UM INIMIGO SURGE EM SEU CAMINHO!'), 
+    	%preciso de analisar o resultado da batalha aqui
     	((batalha(HP, 3, 3)) ->
-        	write('LUAS: '),
-            X is H*3,
-            writeln(X);
-        	writeln('VOCÊ MORREU!!!')
-        ),
-    	casa_vazia()%SE NAO HOUVER INIMIGOS NA CASA ATUAL
-    ),
-    %essas condições não aninhadas de forma errada
-    ((CASAS =:= H), B=:=1 -> %verificar se tem boss
-    	enfrentar(REINO, X),
-        write('Você enfrenta '), writeln(X),
-    	((batalha(HP, 3, 3)) ->
-        	write('LUAS: '),
-            writeln(LUAS);
-        	writeln('VOCÊ MORREU!!!')
+        	writeln('deu bom'); writeln('VOCÊ MORREU!'),fail
         );
-    	!
+    ((CASAS =:= H, B=:=1) -> %chegou na ultima casa e tem boss
+    	enfrentar(REINO, X),
+        write('VOCÊ ENFRENTA '), writeln(X),
+        %preciso de analisar o resultado da batalha aqui
+    	((batalha(HP, 3, 3)) ->
+        	writeln('deu bom'); writeln('VOCÊ MORREU!'),fail
+        )
+    );
+    casa_vazia()
     ),
-    
-    %else vai ser um prossegue ae men
-    percorre(T,LINI, CASAS, B, HP, REINO).
+    percorre(T, LINI, CASAS, B, HP, REINO).%o passin da recursão
 
 %carregar a fase
 carregar_fase(REINO, _LUAS, _CASAS, _LISTA, _LINI, _QINI) :-
-    %A LISTA DE 
     tem_boss(REINO, B),
     gerar_lista(REINO, LUAS, CASAS, LISTA, LINI, QINI),
     writeln(LINI), writeln(LISTA),
     
-    HP is 6,
-    (percorre(LISTA, LINI, CASAS, B, HP, REINO)) ->  
-    	write('luas apos sair: '),writeln(LB),
-    	reparar_odyssey(REINO, LUAS);%se passar do boss com vida, chamar reparar_odyssey
-	writeln('você morreu MAN!').
+    HP is 3,
+    ((percorre(LISTA, LINI, CASAS, B, HP, REINO)) ->
+    	writeln('ganhou!');writeln('perdeu')
+    ).
     
 
-escolher_fase() :-
-    %gerar a lista de fases para escolher
-    %carregar a fase
-    %jogar
-    fail.
+lista_reinos(R) :- findall(X, (reino(X)), R).
 
-%sisteminha de luta -> verificar os hp's
-%consertar a odyssey
-%tá todo cagado o combate, ao desviar simplesmente quebra tudo
+mostrar_reinos([], N).
+mostrar_reinos([H|T], N) :-
+  format('[~|~`0t~d~2+] ', N), X is N+1,
+  mostrar_reinos(T, X).
+
+teste(a) :-
+    lista_reinos(R),
+    mostrar_reinos(R, 1),
+	writeln('ESCOLHA UM REINO: '),
+    read(L),
+    ((L>0,L<15)->  
+    	N is L-1, nth0(N, R, X), carregar_fase(X,_,_,_,_,_);
+    	writeln('OPÇÃO INVÁLIDA! SELECIONE NOVAMENTE'),
+        teste(a)
+    ).
