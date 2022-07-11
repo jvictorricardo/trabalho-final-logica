@@ -21,13 +21,13 @@ personagem(cookatiel).
 personagem(ruineddragon).
 personagem(robobrood).
 
-%amigo - Omiti os que não vão aparecer mas estão no diagrama
+%amigo - Omiti os que nAo vAo aparecer mas estAo no diagrama
 %amigo(personagem).
 amigo(peach).
 amigo(cappy).
 amigo(tiara).
 
-%inimigo - Omiti os que não vão aparecer mas estão no diagrama
+%inimigo - Omiti os que nAo vAo aparecer mas estAo no diagrama
 %inimigo(personagem).
 inimigo(topper).
 inimigo(madamebroodal).
@@ -76,7 +76,7 @@ luas(ruined, 3).
 luas(bowser, 8).
 luas(moon, 0).
 
-%enfrentar - Em reinos com mais de um adversário, eu selecionei o último que você encontra para ser o boss
+%enfrentar - Em reinos com mais de um adversArio, eu selecionei o último que vocE encontra para ser o boss
 %enfrentar(reino, inimigo).
 enfrentar(cap, topper).
 enfrentar(cascade, madamebroodal).
@@ -99,7 +99,7 @@ inimigo_vale(3).
 %hp base
 vida_base(3).
 
-%deseja - reinos em que bowser não passa com intuito de pegar algo foram omitidos
+%deseja - reinos em que bowser nAo passa com intuito de pegar algo foram omitidos
 %deseja(reino, objetivo).
 deseja(cap, tiara).
 deseja(sand, aliancas).
@@ -126,7 +126,7 @@ qual_adv(REINO, INIMIGO) :- enfrentar(REINO, INIMIGO).
 
 %criar lista com n casas
 criar_lista(CASAS, LISTA):- 
-  findall(Num, between(1, CASAS, Num), LISTA).
+    findall(Num, between(1, CASAS, Num), LISTA).
 
 tem_boss(REINO, B) :-
     enfrentar(REINO, X) ->  
@@ -143,7 +143,7 @@ quant_inim(LUAS, BOSS, QINI) :-
     (BOSS =:= 1, LUAS < 4)->(%deve ter apenas o boss
 		QINI is 0
 	);
-    (BOSS =:= 0)->%não tem boss
+    (BOSS =:= 0)->%nAo tem boss
       (
       	X is LUAS/2,
       	QINI is ceil(X)
@@ -159,19 +159,16 @@ gerar_lista(REINO, LUAS, CASAS, LISTA, LINI, QINI) :-
     quant_luas(REINO, LUAS),
     quant_casas(REINO, LUAS, CASAS),
 	
-    tem_boss(REINO, B), %write(B),
+    tem_boss(REINO, B),
 
-    %QINI = ((LUAS - (6 * enfrentar(REINO, X) )) / 3) + 1,
     quant_luas(REINO, LUAS), quant_inim(LUAS, B, QINI),
-    write('quant inim: '),writeln(QINI),
     
-    criar_lista(CASAS, LISTA), %lista inicial
-    posicionar_inimigos(LINI, QINI, CASAS).
+    criar_lista(CASAS, LISTA), %lista inicial com todas as casas a se percorrer
+    posicionar_inimigos(LINI, QINI, CASAS).%lista com posiCOes em que os inimigos estarAo
 
 
 casa_vazia() :- 
-    writeln('Tudo parece seguro, avançando para a próxima casa!').
-	%pensei em colocar um timer pra prosseguir, 1s talvez, para não ficar tudo muito rapido
+    writeln('SEM INIMIGOS A VISTA, AVANCANDO PARA A PROXIMA CASA!').
 
 batalha(HP, HPINI, LUAS) :-
     ((HPINI=:=0) -> %SE GANHAR, "retorna" true
@@ -185,74 +182,60 @@ batalha(HP, HPINI, LUAS) :-
     batalha(HPF, HPINIF, LUAS)).
 
 turno(HP, NHP, HINI, HINIF) :- 
-    %como so ha 1 possibilidade de ambos se atacarem, 
-    %e ainda sim, a ordem de ataque é a mesma, adicionei
-    %um if para ignorar a vez da maquina se tiver sido eliminada
-    writeln('O que deseja fazer?'),
+    writeln('O QUE DESEJA FAZER?'),
     writeln('[1] ATACAR'), writeln('[2] DESVIAR'),
     read(INPUT),
     ((INPUT=:=1) ->
     	writeln('SUA VEZ!'),
 		atk_turno(HINI, HINIF),
-    	((HINIF>0) -> 
+    	((HINIF>0) -> %para ignorar a vez da maquina se tiver sido eliminada
         	writeln('VEZ DO OPONENTE!'), 
         	atk_turno(HP, NHP); 
         !
         );
     (INPUT=:=2) -> (
-	%nesse caso aqui, como um só vai atacar, acho que 
-	%não precisa da condicional de encerramento
 		SORTE is random(2),
 		(SORTE>0) -> 
-                   writeln('VOCÊ DESVIOU, LEVANDO O INIMIGO A SE ACERTAR'), 
+                   writeln('VOCE DESVIOU, LEVANDO O INIMIGO A SE ACERTAR'), 
                    NHP is HP, HINIF is HINI-1;
-		writeln('NÃO CONSEGUIU DESVIAR, FICANDO EXPOSTO E LEVANDO DANO!'),
+		writeln('NAO CONSEGUIU DESVIAR, FICANDO EXPOSTO E LEVANDO DANO!'),
 		atk_turno(HP, NHP),
 		HINIF is HINI
     );
-    writeln('ENTRADA INVÁLIDA!'), NHP is HP, HINIF is HINI
+    writeln('ENTRADA INVALIDA!'), NHP is HP, HINIF is HINI
     ).
 
 atk_turno(HPINI, HPIF) :-
 	HPIF is HPINI-1.
-    
 
-%função de referência
-%dosomething([]).
-%dosomething([H|T]) :- process(H), dosomething(T).
 percorre([], LINI, CASAS, B, HP, REINO).
-percorre([H|T], LINI, CASAS, B, HP, REINO) :- %tá percorrendo no mínimo 2x????
+percorre([H|T], LINI, CASAS, B, HP, REINO) :-
     luas(REINO, LUAS),
-    write(H),
-    ((nth0(_,LINI,H), CASAS>1) -> %tem inimigo
+    ((nth0(_,LINI,H), CASAS>1) -> %aqui tem inimigo comum
     	writeln('UM INIMIGO SURGE EM SEU CAMINHO!'), 
-    	%preciso de analisar o resultado da batalha aqui
-    	((batalha(HP, 3, 3)) ->
-        	writeln('deu bom'); writeln('VOCÊ MORREU!'),fail
+    	((batalha(HP, 3, 3)) ->%analise do resultado da batalha
+        	writeln('VOCE VENCEU!'); writeln('VOCE MORREU!'),fail
         );
     ((CASAS =:= H, B=:=1) -> %chegou na ultima casa e tem boss
     	enfrentar(REINO, X),
-        write('VOCÊ ENFRENTA '), writeln(X),
-        %preciso de analisar o resultado da batalha aqui
-    	((batalha(HP, 3, 3)) ->
-        	writeln('deu bom'); writeln('VOCÊ MORREU!'),fail
+        write('VOCE ENFRENTA '), writeln(X),
+    	((batalha(HP, 3, 3)) ->%analise do resultado da batalha
+        	writeln('VOCE VENCEU! '); write('VOCE MORREU! '),fail
         )
     );
     casa_vazia()
     ),
-    percorre(T, LINI, CASAS, B, HP, REINO).%o passin da recursão
+    percorre(T, LINI, CASAS, B, HP, REINO).%passo da recursAo
 
-%carregar a fase
 carregar_fase(REINO, _LUAS, _CASAS, _LISTA, _LINI, _QINI) :-
     tem_boss(REINO, B),
     gerar_lista(REINO, LUAS, CASAS, LISTA, LINI, QINI),
-    writeln(LINI), writeln(LISTA),
     
     HP is 3,
     ((percorre(LISTA, LINI, CASAS, B, HP, REINO)) ->
-    	writeln('ganhou!');writeln('perdeu')
-    ).
-    
+    	writeln('PARABENS, VOCE SUPEROU O REINO E REPAROU A ODYSSEY! CONTINUE SUA VIAGEM :D');
+        writeln('TENTE NOVAMENTE!')
+    ).    
 
 lista_reinos(R) :- findall(X, (reino(X)), R).
 
@@ -268,6 +251,6 @@ iniciar(a) :-
     read(L),
     ((L>0,L<15)->  
     	N is L-1, nth0(N, R, X), carregar_fase(X,_,_,_,_,_);
-    	writeln('OPÇÃO INVÁLIDA! SELECIONE NOVAMENTE'),
+    	writeln('OPCAO INVALIDA! SELECIONE NOVAMENTE'),
         iniciar(a)
     ).
