@@ -1,0 +1,5 @@
+[0] Config.pm:306> INFO - This is Biber 2.18
+[0] Config.pm:309> INFO - Logfile is 'pg-nomealuno.blg'
+[479] biber-MSWIN64:340> INFO - === 
+[1854] Utils.pm:410> ERROR - Cannot find 'pg-nomealuno.bcf'!
+[1854] Biber.pm:135> INFO - ERRORS: 1

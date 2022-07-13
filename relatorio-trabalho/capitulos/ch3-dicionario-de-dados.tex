@@ -1,0 +1,41 @@
+\chapter{Dicionário de dados}
+\label{sec-dicionario}
+
+\section{Fatos}
+	\begin{itemize}
+		\item \textbf{personagem(nome):} define se o objeto dado é um personagem;
+		\item \textbf{amigo(personagem):} define se o personagem é amigo de Mario;
+		\item \textbf{inimigo(personagem):} define se o personagem é inimigo de Mario;
+		\item \textbf{reino(entidade):} define se a entidade é um reino;
+		\item \textbf{luas(reino, x):} indica a quantidade de luas necessárias para consertar a Odyssey naquele reino;
+		\item \textbf{enfrentar(reino, inimigo):} indica o inimigo que Mario enfrenta em determinado reino;
+		\item \textbf{deseja(reino, x):} indica o objetivo de Bowser naquele reino (se tiver);
+		\item \textbf{vida\_base(X):} representa a quantidade de vida que o personagem inicia, assim como no jogo que se baseia, toda vez que obtemos uma lua, a vida do personagem é curado para sua vida base.		
+	\end{itemize}
+
+\section{Regras}
+	\begin{itemize}
+		\item \textbf{cls:} Função criada para limpar o terminal, funcionando apenas no Windows;
+		\item \textbf{quant\_luas(R, L):} Determina a quantidade de luas em um reino dado, ou lista os reinos a partir de uma dada quantidade de luas;
+		\item \textbf{quant\_casas(R, L):} Determina a quantidade de casas a partir de um reino, servindo para gerar as listas que corresponderão aos caminhos de cada reino;
+		\item \textbf{qual\_adv(R, I):} Determina o boss a ser enfrentado em dado reino ou os reinos em que você enfrenta um dado boss;
+		\item \textbf{criar\_lista(C,  L):} A partir de um número de casas, essa regra gera uma lista com o intervalo de 1 a C;
+		\item \textbf{tem\_boss(R, B):} Determina se há ou não boss em um dado reino;
+		\item \textbf{quant\_inim(L, B, QINI):} A partir de uma quantidade de luas, ele determina quantos inimigos devem haver em um reino para que você consiga escapar do reino;
+		\item \textbf{posicionar\_inimigos(L, Q, C):} Gera uma lista de posições em que os inimigos devem ser posicionados em um reino, a partir da quantidade de casas e luas desse reino dado;
+		\item \textbf{gerar\_lista(R, LU, C, L, LI, QI):} A partir de um reino dado, gera suas casas, quantidade de inimigos e os posiciona pelo reino, usando as regras anteriores;
+		\item \textbf{casa\_vazia():} Dá para o usuário uma mensagem quando ele passar por uma casa em que não há inimigo marcado.
+		\item \textbf{turno(H, HI, HF, HIF):} Recebe a vida dos personagens e realiza o turno do combate, atualizando as vidas após o turno;
+		\item \textbf{atk\_turno(H, HF):} Realiza o ataque a um personagem com o HP dado, atualizando esse valor no segundo termo recebido pela regra.
+		\item \textbf{batalha(H, HI, L):} Recebe a vida do personagem e adversário e a partir das funções anteriores, realiza os turnos do combate entre o personagem e o inimigo;
+		\item \textbf{percorre(V, LI, C, B, HP, R):} Percorre o reino, analisando a lista de inimigos para saber em quais casas há inimigos e acionando a batalha onde houver;
+		\item \textbf{carregar\_fase(R):} A partir de um reino dado, gera suas casas, inimigos, chefe e o percorre;
+		\item \textbf{lista\_reinos(R):} Gera uma lista com o nome de todos os reinos a partir dos fatos;
+		\item \textbf{mostrar\_reinos(R):} Mostra a lista de reinos gerada;
+		\item \textbf{iniciar(A):} Mostra a lista de reinos e inicia o reino selecionado.
+	\end{itemize}
+
+
+
+	
+	
