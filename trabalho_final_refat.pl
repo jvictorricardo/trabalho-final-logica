@@ -92,10 +92,6 @@ enfrentar(ruined, ruineddragon).
 enfrentar(bowser, robobrood).
 enfrentar(moon, bowser).
 
-%quantas luas cada tipo de inimigo vale
-boss_vale(6).
-inimigo_vale(3).
-
 %hp base
 vida_base(3).
 
@@ -108,15 +104,16 @@ deseja(lake, vestidonoiva).
 deseja(metro, combustivel).
 deseja(luncheon, comida).
 deseja(moon, capela).
-casas(5, 3).
 
+%REGRAS
 
-%regras
+cls :- %Função para limpar a tela no windows
+    write('\33\[2J').
 
-%determina a quantidade de luas em um reino dado
+%Determina a quantidade de luas em um reino dado
 quant_luas(REINO, LUAS) :- luas(REINO, LUAS).
 
-%determina a quantidade de casas a partir de um reino
+%Determina a quantidade de casas a partir de um reino
 quant_casas(REINO, LUAS, CASAS) :- luas(REINO,LUAS), CASAS is LUAS*2+1.
 %quant_casas(CAP, LUAS, CASAS). - SINTAXE DA FUNCAO
 
@@ -178,7 +175,7 @@ batalha(HP, HPINI, LUAS) :-
     write('VIDA ATUAL: '), writeln(HP),
     write('VIDA INIMIGO: '), writeln(HPINI),
 	turno(HP, HPF, HPINI, HPINIF),
-	%limpar a tela aq
+	%cls,%limpar a tela aq
     batalha(HPF, HPINIF, LUAS)).
 
 turno(HP, NHP, HINI, HINIF) :- 
@@ -231,7 +228,7 @@ carregar_fase(REINO, _LUAS, _CASAS, _LISTA, _LINI, _QINI) :-
     tem_boss(REINO, B),
     gerar_lista(REINO, LUAS, CASAS, LISTA, LINI, QINI),
     
-    HP is 3,
+    vida_base(HP),
     ((percorre(LISTA, LINI, CASAS, B, HP, REINO)) ->
     	writeln('PARABENS, VOCE SUPEROU O REINO E REPAROU A ODYSSEY! CONTINUE SUA VIAGEM :D');
         writeln('TENTE NOVAMENTE!')
