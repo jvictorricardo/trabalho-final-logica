@@ -10,4 +10,4 @@
 \contentsline {section}{\numberline {3.1}Fatos}{6}{section.3.1}%
 \contentsline {section}{\numberline {3.2}Regras}{6}{section.3.2}%
 \setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
-\contentsline {chapter}{\chapternumberline {4}\MakeUppercase {Análise}}{8}{chapter.4}%
+\contentsline {chapter}{\chapternumberline {4}\MakeUppercase {Conclusão}}{8}{chapter.4}%

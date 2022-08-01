@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.3) (preloaded format=pdflatex 2022.7.12)  13 JUL 2022 08:17
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.3) (preloaded format=pdflatex 2022.7.12)  1 AUG 2022 10:53
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1622,11 +1622,11 @@ See the caption package documentation for explanation.
 (capitulos/ch2-diagrama-ontologico.aux) (capitulos/ch3-dicionario-de-dados.aux)
 (capitulos/ch4-analise.aux)) ) 
 Here is how much of TeX's memory you used:
- 34725 strings out of 478351
- 631919 string characters out of 2837052
- 977444 words of memory out of 3000000
+ 34729 strings out of 478351
+ 631714 string characters out of 2837052
+ 977448 words of memory out of 3000000
  52359 multiletter control sequences out of 15000+600000
- 530062 words of font info for 122 fonts, out of 8000000 for 9000
+ 530244 words of font info for 124 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  99i,12n,117p,1011b,632s stack positions out of 10000i,1000n,20000p,200000b,80000s
 {C:/Users/João/AppData/Local/Programs/MiKTeX/fon
@@ -1639,7 +1639,7 @@ public/lm/lmri10.pfb><C:/Users/João/AppData/Local/Programs/MiKTeX/fonts/type1/
 public/lm/lmss12.pfb><C:/Users/João/AppData/Local/Programs/MiKTeX/fonts/type1/
 public/lm/lmss17.pfb><C:/Users/João/AppData/Local/Programs/MiKTeX/fonts/type1/
 public/lm/lmssbx10.pfb>
-Output written on pg-nomealuno.pdf (9 pages, 1476162 bytes).
+Output written on pg-nomealuno.pdf (9 pages, 1476407 bytes).
 PDF statistics:
  140 PDF objects out of 1000 (max. 8388607)
  22 named destinations out of 1000 (max. 500000)
